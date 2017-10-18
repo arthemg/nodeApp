@@ -1,5 +1,5 @@
 ## Installation
-*for newbies : Clone or download zip to your machine then hit this :
+Clone or download zip to your machine then hit this :
 
     cd to the folder to which you cloned it
 
