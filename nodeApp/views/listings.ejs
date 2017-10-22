@@ -7,23 +7,23 @@
 </head>
 <body id="divResults">
 
-<h1>Welcome to the CSC648</h1>
+<h1>Search for listings here</h1>
 
+<p><a href="/">Back to user search</a></p>
+	
 <form method="post" action="" id="search_form">
-	<input type="text" placeholder="Search users" id="userSearch" name="search">
-	<input type="button" value="Search" onClick="searchUser()">
-	<p><a href="api/user">Users</a></p>
-	<p><a href="/listings">Listing Search</a></p>
+	<input type="text" placeholder="Search listings" id="listingSearch" name="search">
+	<input type="button" value="Search" onClick="searchListing()">
 </form>
-
+	
 <div class="data-table">
     <table border="1" cellpadding="7" cellspacing="7">
         <tr>
             <th width="50px">No</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Password</th>
-            <th>Action</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip Code</th>
         </tr>
 <% if(data.length){
 
@@ -31,9 +31,10 @@ for(var i = 0;i < data.length;i++) { %>
 
 <tr>
     <td><%=(i+1)%></td>
-    <td><%=data[i].name%></td>
-    <td><%=data[i].email%></td>
-    <td><%=data[i].password%></td>
+    <td><%=data[i].address%></td>
+    <td><%=data[i].city%></td>
+    <td><%=data[i].state%></td>
+    <td><%=data[i].zip_code%></td>
     <td>
 
     </td>
@@ -47,6 +48,7 @@ for(var i = 0;i < data.length;i++) { %>
         <% } %>
 
     </table>
+</div>
 
 </body>
 </html>

@@ -23,17 +23,24 @@ app.use(
     connection(mysql,{
         host     : 'localhost',
         user     : 'root',
-        password : 'b795fk99sw',
+        password : '', //set password if there is one
         database : 'test',
         debug    : false //set true if you wanna see debug logger
     },'request')
 
 );
 
+//Get home page
 app.get('/',function(req,res){
     res.render('index', {data:[]});
 });
 
+app.get('/listings',function(req,res){
+    res.render('listings', {data:[]});
+});
+
+
+//Get pages before router
 
 //RESTful route
 var router = express.Router();
@@ -144,7 +151,7 @@ app.post('/search/:user', function(req, res){
 
         if (err) return next("Cannot Connect");
 
-        var query = conn.query("SELECT * FROM t_user WHERE name = ? ",[user],function(err,rows){
+        var query = conn.query("SELECT * FROM t_user WHERE name LIKE ?", user[0] + user[1] + user[2] + "%", function(err,rows){
 
             if(err){
                 console.log(err);
@@ -153,9 +160,35 @@ app.post('/search/:user', function(req, res){
 
             //if user not found
             if(rows.length < 1)
-                return res.send("User Not found");
+                return res.send("User not found.");
 
             res.render('index',{data:rows});
+        });
+
+    });
+
+});
+
+app.post('/searchListings/:listing', function(req, res){
+
+    var listing = req.params.listing;
+	
+    req.getConnection(function(err,conn){
+
+        if (err) return next("Cannot Connect");
+
+        var query = conn.query("SELECT * FROM listings WHERE city LIKE ?", listing[0] + listing[1] + listing[2] + "%", function(err,rows){
+
+            if(err){
+                console.log(err);
+                return next("Mysql error, check your query");
+            }
+
+            //if listing not found
+            if(rows.length < 1)
+                return res.send("Listing not found.");
+
+            res.render('listings',{data:rows});
         });
 
     });
