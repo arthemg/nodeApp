@@ -1,9 +1,11 @@
-#csc648-fall17-team12
-##Instructions on how to test locally
+# csc648-fall17-team12
+
+## Instructions on how to test locally
+
 These instructions assume you have MySQL Community Server and MySQL Workbench installed.
 If not: https://dev.mysql.com/doc/workbench/en/wb-installing.html
 
-##Setting up the database
+## Setting up the database
 
 1. Open up MySQL Workbench and create a new connection if one is not already made.
 
@@ -14,7 +16,7 @@ If not: https://dev.mysql.com/doc/workbench/en/wb-installing.html
 
 3. On the left, you should see a navigation box with *Management*, *Instance*, and *Performance*. At the bottom of the box, you can see *Schemas*. Click the little icon of two arrows facing away from each other to the right of *Schemas*.
 
-   The box now shows you what databases (schemas) are in your server. There might be none, but that's okay.
+   The box now shows you what databases (schemas) are in your server. There might be none now, but that's okay.
 
 4. Now we can create a new database for our server. 
 
@@ -34,7 +36,7 @@ If not: https://dev.mysql.com/doc/workbench/en/wb-installing.html
 
 7. You are finished setting up the database! From now on, all you need to remember is how to import .sql files for future testing.
 
-##Changing the server.js file
+## Changing the server.js file
 
 1. Open up the **server.js** file in the **_nodeApp_** folder.
 
@@ -56,7 +58,7 @@ If not: https://dev.mysql.com/doc/workbench/en/wb-installing.html
    node server.js
    ```
 
-2. Open up a browser do localhost:3000 for the url.
+2. Open up a browser and do localhost:3000 for the url.
 
 3. Try out the search. If you type in Mas Banyar in user search, you should get similar names that start with Mas. In listings search, type in San Francisco and you should also get similar cities that start with San.
 
