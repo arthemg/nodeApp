@@ -23,8 +23,8 @@ app.use(
     connection(mysql,{
         host     : 'localhost',
         user     : 'root',
-        password : '', //set password if there is one
-        database : 'test',
+        password : '4521', //set password if there is one
+        database : 'test', //set DB name here
         debug    : false //set true if you wanna see debug logger
     },'request')
 
@@ -35,8 +35,8 @@ app.get('/',function(req,res){
     res.render('index', {data:[]});
 });
 
-app.get('/listings',function(req,res){
-    res.render('listings', {data:[]});
+app.get('/search_listings',function(req,res){
+    res.render('search_listings', {data:[]});
 });
 
 
@@ -59,6 +59,7 @@ router.use(function(req, res, next) {
 });
 
 var curut = router.route('/user');
+var listingsRoute = router.route('/listings');
 
 
 //show the CRUD interface | GET
@@ -69,7 +70,7 @@ curut.get(function(req,res,next){
 
         if (err) return next("Cannot Connect");
 
-        var query = conn.query('SELECT * FROM t_user',function(err,rows){
+        var query = conn.query('SELECT * FROM t_user ',function(err,rows){
 
             if(err){
                 console.log(err);
@@ -125,9 +126,75 @@ curut.post(function(req,res,next){
 
 });
 
+//Same as above, but for listings
+listingsRoute.get(function(req,res,next){
+
+
+    req.getConnection(function(err,conn){
+
+        if (err) return next("Cannot Connect");
+
+        var query = conn.query('SELECT * FROM listings ',function(err,rows){
+
+            if(err){
+                console.log(err);
+                return next("Mysql error, check your query");
+            }
+
+            res.render('all_listings',{title:"RESTful Crud Example",data:rows});
+
+         });
+
+    });
+
+});
+
+//Post Listing data to DB
+listingsRoute.post(function(req,res,next){
+
+    //validation
+    req.assert('address','Address is required').notEmpty();
+    req.assert('city','City is required').notEmpty();
+    req.assert('state','State is required').notEmpty();
+    req.assert('zip_code','Enter a zip code of 5 numbers').len(5,5);
+
+    var errors = req.validationErrors();
+    if(errors){
+        res.status(422).json(errors);
+        return;
+    }
+
+    //get data
+    var data = {
+        address:req.body.address,
+        city:req.body.city,
+        state:req.body.state,
+        zip_code:req.body.zip_code
+     };
+
+    //inserting into mysql
+    req.getConnection(function (err, conn){
+
+        if (err) return next("Cannot Connect");
+
+        var query = conn.query("INSERT INTO listings set ? ",data, function(err, rows){
+
+           if(err){
+                console.log(err);
+                return next("Mysql error, check your query");
+           }
+
+          res.sendStatus(200);
+
+        });
+
+     });
+
+});
 
 //now for Single route (GET,DELETE,PUT)
 var curut2 = router.route('/user/:user_id');
+var listingsRoute2 = router.route('/listings/:listing_id');
 
 /*------------------------------------------------------
 route.all is extremely useful. you can use it to do
@@ -142,8 +209,8 @@ curut2.all(function(req,res,next){
     next();
 });
 
-
-app.post('/search/:user', function(req, res){
+//User search
+app.post('/search/:user', function(req, res, next){
 
     var user = req.params.user;
 
@@ -151,7 +218,7 @@ app.post('/search/:user', function(req, res){
 
         if (err) return next("Cannot Connect");
 
-        var query = conn.query("SELECT * FROM t_user WHERE name LIKE ?", user[0] + user[1] + user[2] + "%", function(err,rows){
+        var query = conn.query("SELECT * FROM t_user WHERE name LIKE ? ", user[0] + user[1] + user[2] + "%", function(err,rows){
 
             if(err){
                 console.log(err);
@@ -169,7 +236,8 @@ app.post('/search/:user', function(req, res){
 
 });
 
-app.post('/searchListings/:listing', function(req, res){
+//Listing search
+app.post('/searchListings/:listing', function(req, res, next){
 
     var listing = req.params.listing;
 	
@@ -177,7 +245,7 @@ app.post('/searchListings/:listing', function(req, res){
 
         if (err) return next("Cannot Connect");
 
-        var query = conn.query("SELECT * FROM listings WHERE city LIKE ?", listing[0] + listing[1] + listing[2] + "%", function(err,rows){
+        var query = conn.query("SELECT * FROM listings WHERE city LIKE ? ", listing[0] + listing[1] + listing[2] + "%", function(err,rows){
 
             if(err){
                 console.log(err);
@@ -188,7 +256,7 @@ app.post('/searchListings/:listing', function(req, res){
             if(rows.length < 1)
                 return res.send("Listing not found.");
 
-            res.render('listings',{data:rows});
+            res.render('search_listings',{data:rows});
         });
 
     });
@@ -274,6 +342,101 @@ curut2.delete(function(req,res,next){
         if (err) return next("Cannot Connect");
 
         var query = conn.query("DELETE FROM t_user  WHERE user_id = ? ",[user_id], function(err, rows){
+
+             if(err){
+                console.log(err);
+                return next("Mysql error, check your query");
+             }
+
+             res.sendStatus(200);
+
+        });
+        //console.log(query.sql);
+
+     });
+});
+
+listingsRoute2.get(function(req,res,next){
+
+    var listing_id = req.params.listing_id;
+
+    req.getConnection(function(err,conn){
+
+        if (err) return next("Cannot Connect");
+
+        var query = conn.query("SELECT * FROM listings WHERE listing_id = ? ",[listing_id],function(err,rows){
+
+            if(err){
+                console.log(err);
+                return next("Mysql error, check your query");
+            }
+
+            //if listing not found
+            if(rows.length < 1)
+                return res.send("Listing Not found");
+
+            res.render('edit_listing',{title:"Edit listing",data:rows});
+        });
+
+    });
+
+});
+
+//update data
+listingsRoute2.put(function(req,res,next){
+    var listing_id = req.params.listing_id;
+
+    //validation
+    req.assert('address','Address is required').notEmpty();
+    req.assert('city','City is required').notEmpty();
+    req.assert('state','State is required').notEmpty();
+    req.assert('zip_code','Enter a zip code of 5 numbers').len(5,5);
+
+    var errors = req.validationErrors();
+    if(errors){
+        res.status(422).json(errors);
+        return;
+    }
+
+    //get data
+    var data = {
+        address:req.body.address,
+        city:req.body.city,
+        state:req.body.state,
+        zip_code:req.body.zip_code
+		
+     };
+
+    //inserting into mysql
+    req.getConnection(function (err, conn){
+
+        if (err) return next("Cannot Connect");
+
+        var query = conn.query("UPDATE listings set ? WHERE listing_id = ? ",[data,listing_id], function(err, rows){
+
+           if(err){
+                console.log(err);
+                return next("Mysql error, check your query");
+           }
+
+          res.sendStatus(200);
+
+        });
+
+     });
+
+});
+
+//delete data
+listingsRoute2.delete(function(req,res,next){
+
+    var listing_id = req.params.listing_id;
+
+     req.getConnection(function (err, conn) {
+
+        if (err) return next("Cannot Connect");
+
+        var query = conn.query("DELETE FROM listings  WHERE listing_id = ? ",[listing_id], function(err, rows){
 
              if(err){
                 console.log(err);

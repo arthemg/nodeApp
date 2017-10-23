@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%=title%></title>
+        <script type="text/javascript" src="/../js/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="/../js/scripts.js"></script>
+        <link rel="stylesheet" href="/../css/style.css">
+    </head>
+<body>
+<div class="data-table">
+    <table border="1" cellpadding="7" cellspacing="7">
+        <tr>
+            <th width="50px">Key</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip Code</th>
+        </tr>
+                       
+        <% if(data.length){ 
+                        
+         for(var i = 0;i < data.length;i++) { %>
+         
+        <tr>
+            <td><%=(i+1)%></td>
+            <td><%=data[i].address%></td>
+            <td><%=data[i].city%></td>
+            <td><%=data[i].state%></td>
+            <td><%=data[i].zip_code%></td>
+			<td>
+                <a class="a-inside edit" href="/api/listings/<%=data[i].listing_id%>">Edit</a>
+               
+                <a class="a-inside delete" href="javascript:void(0)" onClick="deleteListing(<%=data[i].listing_id%>)">Delete</a>
+               
+            </td>
+        </tr>
+    <% }
+    
+     }else{ %>
+         <tr>
+            <td colspan="5">No Data</td>
+         </tr>
+    <% } %>
+                                      
+    </table>
+</div>
+<div class="page-data">
+    
+    <form method="post" action="" id="the-form">
+        <table cellpadding="11">
+        <tr>
+            <td class="label">Address</td><td>: <input type="text" name="address"></td>
+         </tr>
+        <tr>
+            <td class="label">City</td><td>: <input type="text" name="city"></td>
+         </tr>
+          <tr>
+            <td class="label">State</td><td>: <input type="text" name="state"></td>
+         </tr>          
+		 <tr>
+            <td class="label">Zip Code</td><td>: <input type="text" name="zip_code"></td>
+         </tr>
+		 
+         <tr>
+            <td class="label"></td>
+            <td>
+                &nbsp; <input type="button" value="Save" onClick="saveListing()">
+            </td>
+         </tr>
+        </table>
+    </form>
+</div>
+<div class="page-data">
+     <ul class="err-area"></ul>
+</div>
+
+</body>
+</html>
