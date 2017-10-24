@@ -14,6 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true })); //support x-www-form-urlenco
 app.use(bodyParser.json());
 app.use(expressValidator());
 
+require('./test.js')(app); //<-------------- require new module file
 /*MySql connection*/
 var connection  = require('express-myconnection'),
     mysql = require('mysql');
@@ -23,7 +24,7 @@ app.use(
     connection(mysql,{
         host     : 'localhost',
         user     : 'root',
-        password : '4521', //set password if there is one
+        password : 'b795fk99sw', //set password if there is one
         database : 'test', //set DB name here
         debug    : false //set true if you wanna see debug logger
     },'request')
@@ -58,73 +59,73 @@ router.use(function(req, res, next) {
     next();
 });
 
-var curut = router.route('/user');
+//var curut = router.route('/user');
 var listingsRoute = router.route('/listings');
 
 
-//show the CRUD interface | GET
-curut.get(function(req,res,next){
-
-
-    req.getConnection(function(err,conn){
-
-        if (err) return next("Cannot Connect");
-
-        var query = conn.query('SELECT * FROM t_user ',function(err,rows){
-
-            if(err){
-                console.log(err);
-                return next("Mysql error, check your query");
-            }
-
-            res.render('user',{title:"RESTful Crud Example",data:rows});
-
-         });
-
-    });
-
-});
-
-//post data to DB | POST
-curut.post(function(req,res,next){
-
-    //validation
-    req.assert('name','Name is required').notEmpty();
-    req.assert('email','A valid email is required').isEmail();
-    req.assert('password','Enter a password 6 - 20').len(6,20);
-
-    var errors = req.validationErrors();
-    if(errors){
-        res.status(422).json(errors);
-        return;
-    }
-
-    //get data
-    var data = {
-        name:req.body.name,
-        email:req.body.email,
-        password:req.body.password
-     };
-
-    //inserting into mysql
-    req.getConnection(function (err, conn){
-
-        if (err) return next("Cannot Connect");
-
-        var query = conn.query("INSERT INTO t_user set ? ",data, function(err, rows){
-
-           if(err){
-                console.log(err);
-                return next("Mysql error, check your query");
-           }
-
-          res.sendStatus(200);
-
-        });
-
-     });
-
-});
+// //show the CRUD interface | GET
+// curut.get(function(req,res,next){
+//
+//
+//     req.getConnection(function(err,conn){
+//
+//         if (err) return next("Cannot Connect");
+//
+//         var query = conn.query('SELECT * FROM t_user ',function(err,rows){
+//
+//             if(err){
+//                 console.log(err);
+//                 return next("Mysql error, check your query");
+//             }
+//
+//             res.render('user',{title:"RESTful Crud Example",data:rows});
+//
+//          });
+//
+//     });
+//
+// });
+//
+// //post data to DB | POST
+// curut.post(function(req,res,next){
+//
+//     //validation
+//     req.assert('name','Name is required').notEmpty();
+//     req.assert('email','A valid email is required').isEmail();
+//     req.assert('password','Enter a password 6 - 20').len(6,20);
+//
+//     var errors = req.validationErrors();
+//     if(errors){
+//         res.status(422).json(errors);
+//         return;
+//     }
+//
+//     //get data
+//     var data = {
+//         name:req.body.name,
+//         email:req.body.email,
+//         password:req.body.password
+//      };
+//
+//     //inserting into mysql
+//     req.getConnection(function (err, conn){
+//
+//         if (err) return next("Cannot Connect");
+//
+//         var query = conn.query("INSERT INTO t_user set ? ",data, function(err, rows){
+//
+//            if(err){
+//                 console.log(err);
+//                 return next("Mysql error, check your query");
+//            }
+//
+//           res.sendStatus(200);
+//
+//         });
+//
+//      });
+//
+// });
 
 //Same as above, but for listings
 listingsRoute.get(function(req,res,next){
